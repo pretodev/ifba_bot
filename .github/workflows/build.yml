@@ -8,9 +8,9 @@ name: Build/release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   schedule:
-    - cron: '0 10 * * 0'
+    - cron: "0 10 * * 0"
   workflow_dispatch:
 
 jobs:
@@ -26,16 +26,24 @@ jobs:
 
       - name: Analyze project source
         run: dart analyze
-        
+
       - name: Create release folder
         run: mkdir release
-        
+
       - name: Add scripts on folder
         run: cp -r image_creator release/image_creator
 
       - name: Compile
-        run: dart compile exe bin/ifba_bot.dart -o release/ifba_bot
-        
+        shell: bash
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABSEURL}}
+          SUPABASE_KEY: ${{ secrets.SUPABASEKEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAMTOKEN }}
+          TELEGRAM_BOT_NAME: ${{ secrets.TELEGRAMBOTNAME}}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAMCHATID }}
+          PYTHON_PICTURE_CREATOR: ${{ secrets.PYTHONPICTURECREATOR }}
+        run: dart compile exe bin/ifba_bot.dart -o release/ifba_bot --define=SUPABASE_URL="$SUPABASE_URL" --define=SUPABASE_KEY="$SUPABASE_KEY" --define=TELEGRAM_TOKEN="$TELEGRAM_TOKEN" --define=TELEGRAM_BOT_NAME="$TELEGRAM_BOT_NAME" --define=TELEGRAM_CHAT_ID="$TELEGRAM_CHAT_ID" --define=PYTHON_PICTURE_CREATOR="$PYTHON_PICTURE_CREATOR"
+
       - name: Compress release
         uses: a7ul/tar-action@v1.1.0
         id: compress
@@ -45,11 +53,9 @@ jobs:
           files: |
             ./ifba_bot
             ./image_creator
-          outPath: 'IFBABot.tar.bz2'
-        
+          outPath: "IFBABot.tar.bz2"
+
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: 'IFBABot.tar.bz2'
-        
-          
+          artifacts: "IFBABot.tar.bz2"
