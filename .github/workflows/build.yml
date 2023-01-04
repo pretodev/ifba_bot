@@ -31,10 +31,10 @@ jobs:
         run: mkdir release
         
       - name: Add scripts on folder
-        run: cp -r image_creator build/image_creator
+        run: cp -r image_creator release/image_creator
 
       - name: Compile
-        run: dart compile exe bin/ifba_bot.dart -o build/ifba_bot
+        run: dart compile exe bin/ifba_bot.dart -o release/ifba_bot
         
       - name: Compress release
         uses: a7ul/tar-action@v1.1.0
