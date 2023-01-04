@@ -1,0 +1,50 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Build/release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  schedule:
+    - cron: '0 10 * * 0'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Analyze project source
+        run: dart analyze
+        
+      - name: Create release folder
+        run: mkdir release
+        
+      - name: Add scripts on folder
+        run: cp -r image_creator build/image_creator
+
+      - name: Compile
+        run: dart compile exe bin/ifba_bot.dart -o build/ifba_bot
+        
+      - name: Compress release
+        uses: a7ul/tar-action@v1.1.0
+        id: compress
+        with:
+          command: c
+          cwd: ./
+          files: |
+            ./release
+          outPath: 'IFBABot.tar.bz2'
+        
+      - run: ls
+          
