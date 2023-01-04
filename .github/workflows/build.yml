@@ -41,8 +41,10 @@ jobs:
         id: compress
         with:
           command: c
+          cwd: ./release
           files: |
-            ./release
+            ./ifba_bot
+            ./image_creator
           outPath: 'IFBABot.tar.bz2'
         
       - name: Create release
